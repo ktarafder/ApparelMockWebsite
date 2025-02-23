@@ -1,8 +1,6 @@
 // app/layout.tsx
 import "./globals.css";
 import { CartProvider } from "./context/CartContext";
-import CartCount from "../components/CartCount";
-import Link from "next/link";
 import React from "react";
 import AnimatedHeader from "@/components/AnimatedHeader";
 
