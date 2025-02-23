@@ -91,9 +91,12 @@ const products: Product[] = [
   },
 ];
 
-type PageProps = {
-  params: { id: string };
-};
+interface PageProps {
+  params: {
+    id: string;
+  };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -111,7 +114,9 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-export default function ProductDetailPage({ params }: PageProps) {
+'use client';
+
+export default function ProductDetailPage({ params, searchParams }: PageProps) {
   const productId = parseInt(params.id, 10);
   const product = products.find((p) => p.id === productId);
 
