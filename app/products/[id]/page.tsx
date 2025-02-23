@@ -114,7 +114,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-export default function ProductDetailPage({ params, searchParams }: PageProps) {
+export default function ProductDetailPage({ params }: PageProps) {
   const productId = parseInt(params.id, 10);
   const product = products.find((p) => p.id === productId);
 
