@@ -2,6 +2,7 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 const heroVariants = {
@@ -61,14 +62,16 @@ export default function HomePage() {
     <main className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="relative">
-        <motion.img
-          src="/hero.jpg" // Replace with your hero image path
-          alt="Fashionable clothing"
-          className="w-full h-[600px] object-cover"
-          initial="hidden"
-          animate="visible"
-          variants={heroVariants}
-        />
+        <motion.div className="relative w-full h-[600px]" initial="hidden" animate="visible" variants={heroVariants}>
+          <Image
+            src="/hero.jpg"
+            alt="Fashionable clothing"
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
+          />
+        </motion.div>
         <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center">
           <motion.h2
             className="text-4xl md:text-6xl font-extrabold text-white text-center"
@@ -120,11 +123,15 @@ export default function HomePage() {
                 custom={i}
                 variants={cardVariants}
               >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-64 object-cover rounded-md"
-                />
+                <div className="relative w-full h-64">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-cover rounded-md"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
                 <h4 className="mt-4 text-2xl font-semibold text-gray-800">
                   {product.name}
                 </h4>

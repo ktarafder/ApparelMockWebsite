@@ -2,8 +2,8 @@
 
 import { useCart } from "../context/CartContext";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Product = {
@@ -110,7 +110,6 @@ const itemVariants = {
 
 export default function CartPage() {
   const { cart, removeFromCart } = useCart();
-  const router = useRouter();
   const [showEffipayModal, setShowEffipayModal] = useState(false);
   const [effipayEmail, setEffipayEmail] = useState('');
   const [effipayPassword, setEffipayPassword] = useState('');
@@ -195,10 +194,12 @@ export default function CartPage() {
                   layout
                   className="flex flex-col md:flex-row items-center bg-white rounded-lg shadow p-4"
                 >
-                  <img
+                  <Image
                     src={product.image}
                     alt={product.name}
-                    className="w-32 h-32 object-cover rounded-lg"
+                    width={128}
+                    height={128}
+                    className="object-cover rounded-lg"
                   />
                   <div className="flex-1 mt-4 md:mt-0 md:ml-6">
                     <h2 className="text-xl font-semibold text-gray-800">

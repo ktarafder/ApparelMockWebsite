@@ -3,6 +3,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 type Product = {
@@ -125,11 +126,16 @@ export default function ProductsPage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        <img
-          src="/store-banner.jpg"
-          alt="Store Banner"
-          className="w-full h-96 object-cover"
-        />
+        <div className="relative w-full h-96">
+          <Image
+            src="/store-banner.jpg"
+            alt="Store Banner"
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
+          />
+        </div>
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
           <motion.h1 
