@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type Product = {
   id: number;
@@ -110,6 +111,9 @@ const itemVariants = {
 export default function CartPage() {
   const { cart, removeFromCart } = useCart();
   const router = useRouter();
+  const [showEffipayModal, setShowEffipayModal] = useState(false);
+  const [effipayEmail, setEffipayEmail] = useState('');
+  const [effipayPassword, setEffipayPassword] = useState('');
 
   const cartProducts = cart
     .map((item) => {
@@ -125,32 +129,35 @@ export default function CartPage() {
 
   const handlePayment = async () => {
     try {
-      // Sample transaction id; replace with your own logic as needed.
-      const trans_id = Date.now();
-      const trans_amt = totalPrice;
-      const trans_type = "Apparel";
-      const redirectUrl = "/order-complete";
+      const validationRes = await fetch(
+        `http://localhost:3001/api/ingest?email=${encodeURIComponent(effipayEmail)}&password=${encodeURIComponent(effipayPassword)}`,
+        {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          mode: 'cors',
+        }
+      );
 
-      const res = await fetch(`/api/pay?redirect=${encodeURIComponent(redirectUrl)}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          trans_id,
-          trans_amt,
-          trans_type,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Payment failed");
+      if (!validationRes.ok) {
+        alert("Account doesn't exist");
+        return;
       }
 
-      // On successful payment, redirect to the order complete page.
-      router.push(redirectUrl);
+      // If validation successful, clear form and close modal
+      setEffipayEmail('');
+      setEffipayPassword('');
+      setShowEffipayModal(false);
+
     } catch (error) {
-      console.error(error);
-      alert("There was an error processing your payment. Please try again.");
+      console.error('Validation error:', error);
+      alert("Unable to validate Effipay account. Please ensure the service is running on port 3001.");
     }
+  };
+
+  const handleEffipayClick = () => {
+    setShowEffipayModal(true);
   };
 
   return (
@@ -237,7 +244,7 @@ export default function CartPage() {
                 </div>
                 <motion.button
                   type="button"
-                  onClick={handlePayment}
+                  onClick={handleEffipayClick}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   animate={{
@@ -253,6 +260,60 @@ export default function CartPage() {
           </AnimatePresence>
         )}
       </div>
+      {/* Effipay Modal */}
+      {showEffipayModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4"
+          >
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">Effipay Login</h2>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="effipay-email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="effipay-email"
+                  value={effipayEmail}
+                  onChange={(e) => setEffipayEmail(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="Enter your Effipay email"
+                />
+              </div>
+              <div>
+                <label htmlFor="effipay-password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="effipay-password"
+                  value={effipayPassword}
+                  onChange={(e) => setEffipayPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="Enter your Effipay password"
+                />
+              </div>
+              <div className="flex space-x-4 mt-6">
+                <button
+                  onClick={() => setShowEffipayModal(false)}
+                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handlePayment}
+                  className="flex-1 px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 transition"
+                >
+                  Pay Now
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </motion.main>
   );
 }
